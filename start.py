@@ -532,7 +532,6 @@ if option == "1":
     url = input("webhook => ")
     sqli = DiscordWebhook(url=f'{url}', username="sqli")
     sqliauto()
-    os.system("rm wayback.txt && rm uniq.txt && rm final.txt ")
 
 if option == "2":
     os.system("clear")
@@ -541,7 +540,6 @@ if option == "2":
     url = input("webhook => ")
     sensinfo = DiscordWebhook(url=f'{url}', username="sensinfo")
     ifinder()
-    os.system("rm wayback2.txt && rm uniq2.txt && rm final2.txt ")
 
 if option == "3":
     os.system("clear")
