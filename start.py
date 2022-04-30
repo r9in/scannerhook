@@ -33,9 +33,9 @@ def sqliauto():
     sqli.add_embed(embed)
     sqli.execute(remove_embeds=True, remove_files=True)
 
-    os.system(f"python ParamSpider/paramspider.py -d {domain} | httpx > ./LOGGER/{domain}/paramspiderSQLI.txt")
+    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx -mc 200 > ./LOGGER/{domain}/paramsXSS.txt")
 
-    os.system(f"sort ./LOGGER/{domain}/paramspiderSQLI.txt | uniq > ./LOGGER/{domain}/uniqSQLI.txt")
+    os.system(f"sort ./LOGGER/{domain}/paramsXSS.txt | uniq > ./LOGGER/{domain}/uniqSQLI.txt")
 
     time.sleep(3)
 
@@ -54,7 +54,7 @@ def sqliauto():
 
             print(f"testing: {line}")
 
-            os.system(f"sqlmap -u {line} --risk 2 --level 2 --random-agent --random-agent --batch --threads=10 --dbs > ./LOGGER/{domain}/logSQLI.txt")
+            os.system(f"sqlmap -u {line} --risk 1 --level 1 --random-agent --random-agent --batch --threads=10 --dbs > ./LOGGER/{domain}/logSQLI.txt")
 
             w = "might be vulnerable"
 
@@ -135,11 +135,11 @@ def xss():
     xssw.add_embed(embed)
     xssw.execute(remove_embeds=True, remove_files=True)
 
-    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx httpx -mc 200 > ./LOGGER/{domain}/paramsXSS.txt")
+    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx -mc 200 > ./LOGGER/{domain}/pxss.txt")
 
     time.sleep(3)
 
-    file = open(f'./LOGGER/{domain}/paramsXSS.txt')
+    file = open(f'./LOGGER/{domain}/pxss.txt')
 
     while True:
 
@@ -764,6 +764,7 @@ if option == "2":
 if option == "3":
     os.system("clear")
     domain = input("domain => ")
+    os.system(f"mkdir ./LOGGER/{domain}")
     url = input("webhook => ")
     xssw = DiscordWebhook(url=f'{url}', username="xss")
     xss()
