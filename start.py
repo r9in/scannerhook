@@ -58,9 +58,9 @@ def sqliauto():
 
             w = "might be vulnerable"
 
-            if w in open(f'./LOGGER/{domain}/logSQLI.txt').read():
+            with open(f'./LOGGER/{domain}/logSQLI.txt') as f:
 
-                with open(f'./LOGGER/{domain}/logSQLI.txt') as f:
+                if w in open(f'./LOGGER/{domain}/logSQLI.txt').read():
 
                     vuln = DiscordEmbed(title=f'TARGET MIGHT BE VULNERABLE TO SQLI', description=f'[ - ] URL: {line}', color='00FF00')
                     sqli.add_file(file=f.read(), filename='log.txt')
@@ -69,7 +69,7 @@ def sqliauto():
 
                     time.sleep(20)
 
-            else:
+                else:
                     notvuln = DiscordEmbed(title=f'TARGET MIGHT NOT BE VULNERABLE BUT HERE IS THE LOG', description=f'[ - ] URL: {line}', color='FF0000')
                     sqli.add_file(file=f.read(), filename='log.txt')
                     sqli.add_embed(notvuln)
@@ -150,9 +150,9 @@ def xss():
 
             w = "POC"
 
-            if w in open(f'./LOGGER/{domain}/logXSS.txt').read():
+            with open(f'./LOGGER/{domain}/logXSS.txt') as f:
 
-                with open(f'./LOGGER/{domain}/logXSS.txt') as f:
+                if w in open(f'./LOGGER/{domain}/logXSS.txt').read():
 
                     vuln = DiscordEmbed(title=f'TARGET MIGHT BE VULNERABLE TO XSS', description=f'[ - ] URL: {line}', color='00FF00')
                     xssw.add_file(file=f.read(), filename='logXSS.txt')
@@ -160,8 +160,8 @@ def xss():
                     xssw.execute(vuln)
 
                     time.sleep(20)
-            else:
 
+                else:
                     notvuln = DiscordEmbed(title=f'TARGET MIGHT NOT BE VULNERABLE BUT HERE IS THE LOG', description=f'[ - ] URL: {line}', color='FF0000')
                     xssw.add_file(file=f.read(), filename='logXSS.txt')
                     xssw.add_embed(notvuln)
