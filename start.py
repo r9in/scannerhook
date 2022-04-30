@@ -135,7 +135,7 @@ def xss():
     xssw.add_embed(embed)
     xssw.execute(remove_embeds=True, remove_files=True)
 
-    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx > ./LOGGER/{domain}/paramsXSS.txt")
+    os.system(f"subfinder -d {domain} | waybackurls | grep '=' | httpx httpx -mc 200 > ./LOGGER/{domain}/paramsXSS.txt")
 
     time.sleep(3)
 
